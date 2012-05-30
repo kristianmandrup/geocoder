@@ -17,10 +17,12 @@ module Geocoder
       def geocoder_init(options)
         super(options)
         if options[:skip_index] == false
-          # index [[ geocoder_options[:coordinates], Mongo::GEO2D ]],
-          #             :min => -180, :max => 180 # create 2d index
-            
-          index geocoder_options[:coordinates] => "2d" #Updated to work with new Mongoid 3.0.0rc
+          if ::Mongoid::VERSION < '3'
+            index [[ geocoder_options[:coordinates], Mongo::GEO2D ]],
+                     :min => -180, :max => 180 # create 2d index
+          else
+            index geocoder_options[:coordinates] => "2d" #Updated to work with new Mongoid 3.0.0rc
+          end
           # Refer to http://mongoid.org/en/mongoid/docs/upgrading.html 
         end
       end

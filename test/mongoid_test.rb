@@ -29,6 +29,13 @@ class MongoidTest < Test::Unit::TestCase
 
     Place.geocoded_by :address, :coordinates => :location, :units => :mi
     assert_equal 69, p.distance_to([0,1]).round
+
+    p = GeoSpacialPlace.new(*venue_params(:msg))    
+    GeoSpacialPlace.geocoded_by :address, :coordinates => :location, :units => :km
+    p.geocode
+    puts p.inspect
+    assert_equal 0, p.distance_to([40.750354, -73.993371]).round
+
   end
 
   def test_index_is_skipped_if_skip_option_flag

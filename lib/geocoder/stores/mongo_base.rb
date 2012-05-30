@@ -1,6 +1,8 @@
 module Geocoder::Store
   module MongoBase
 
+    class InvalidCoordinatesFieldError < StandardError; end
+
     def self.included_by_model(base)
       base.class_eval do
 
@@ -48,7 +50,17 @@ module Geocoder::Store
     #
     def to_coordinates
       coords = send(self.class.geocoder_options[:coordinates])
-      coords.is_a?(Array) ? coords.reverse : []
+      coords = case coords
+      when Array
+        coords
+      else
+        unless coords.respond_to? :to_a
+          []
+          # raise InvalidCoordinatesFieldError, "Not a valid coordinates field, must be Array or respond to #to_a, was: #{coords}"
+        end
+        coords.to_a[0..1]
+      end
+      coords.reverse
     end
 
     ##
